@@ -1,0 +1,16 @@
+[package]
+name = "slidin-puzzle"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+sqlx = { version = "0.7.3", features = ["runtime-tokio-native-tls", "sqlite"]}
+tokio = { version = "1.35", features = ["full"] }
+axum = "0.7.2"
+serde = { version = "1.0", features = ["derive"] }
+askama = { version = "0.12.1", features = ["with-axum"] }
+askama_axum = "0.4.0"
+rand = "0.8.5"
+serde_json = { version = "1.0" }

@@ -1,0 +1,23 @@
+<!-- templates/todos.html -->
+{% extends "base.html" %}
+{% block content %}
+<div id="todos">
+  <!-- <tbody id="todos-content"> -->
+  <!-- Askama allows for rendering an array of things -->
+  <table>
+    {% for vec in random_board %}
+    <tr>
+      {% for cell in vec %}
+      <td> {{cell}} </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  <br>
+
+  <!-- </tbody> -->
+</div>
+  <button type="button" hx-target="#todos" hx-get="/bad" hx-swap="innerhtml"> iterate over puzzle </button>
+{% endblock %}
+
+<!-- templates/todos.html -->

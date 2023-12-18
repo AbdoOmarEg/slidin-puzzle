@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="remaining_iterations">
+  <!-- <tbody id="todos-content"> -->
+  <!-- Askama allows for rendering an array of things -->
+  <table>
+    {% for board in path %}
+    <tr>
+      <td> {{board}} </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <br>
+
+  <!-- </tbody> -->
+  <button type="button" hx-target="#remaining_iterations"  hx-get="/badz?index={{step}}" hx-swap="innerhtml"> next iteration </button>
+</div>
+{% endblock %}
+
+<!-- templates/todos.html -->

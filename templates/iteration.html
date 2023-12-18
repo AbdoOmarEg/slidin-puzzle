@@ -1,0 +1,47 @@
+<!-- templates/todos.html -->
+{% extends "base.html" %}
+{% block content %}
+<div id="first_iteration">
+  <!-- <tbody id="todos-content"> -->
+  <!-- Askama allows for rendering an array of things -->
+  <table>
+    {#
+    {% for board in path %}
+    {% for cells in board %}
+    <tr>
+      {% for cell in cells %}
+      <td> {{cell}} </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+    {% if loop.last %}
+    {% break %}
+    {% endif %}
+    <tr>
+      <td>----</td>
+      <td>----</td>
+      <td>----</td>
+    </tr>
+    {% endfor %}
+    #}
+    {% for board in path %}
+    {% for cells in board %}
+    <tr>
+      {% for cell in cells %}
+      <td> {{cell}} </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+    {% if loop.first %}
+    {% break %}
+    {% endif %}
+    {% endfor %}
+  </table>
+  <br>
+
+  <!-- </tbody> -->
+  <button type="button" hx-target ="#first_iteration" hx-get="/badz?index=1" hx-swap="innerhtml"> next iteration </button>
+</div>
+{% endblock %}
+
+<!-- templates/todos.html -->
