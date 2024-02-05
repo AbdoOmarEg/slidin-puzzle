@@ -1,15 +1,14 @@
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashSet, VecDeque};
 use std::fmt;
-use std::time::Instant;
 
 use rand::seq::SliceRandom;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 pub struct Board {
-    cells: Vec<Vec<i32>>,
+    cells: Vec<i32>,
     parent: Option<Box<Board>>,
-    zero: (usize, usize),
+    zero: usize,
     g_cost: i32,
     h_cost: i32,
 }
@@ -31,27 +30,29 @@ impl PartialOrd for Board {
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "\n")?;
-        for (i, vec) in self.cells.iter().enumerate() {
-            for (j, e) in vec.iter().enumerate() {
-                if j == vec.len() - 1 {
-                    write!(f, "{}", e)?;
-                    break;
-                }
-                write!(f, "{}  -  ", e)?;
-            }
-            if i == self.cells.len() - 1 {
+        for (i, cell) in self.cells.iter().enumerate() {
+            // hardcoded for 3x3 board
+            if i == 3 || i == 6 {
                 write!(f, "\n")?;
-                break;
             }
-            write!(f, "\n\n")?;
+            write!(f, "{}", cell)?;
         }
         Ok(())
     }
 }
 
 impl Board {
-    pub fn new(cells: Vec<Vec<i32>>) -> Board {
-        let zero = find_zero(&cells);
+    pub fn find_zero(cells: &Vec<i32>) -> usize {
+        for i in 0..cells.len() {
+            if cells[i] == 0 {
+                return i;
+            }
+        }
+
+        unreachable!()
+    }
+    pub fn new(cells: Vec<i32>) -> Board {
+        let zero = Self::find_zero(&cells);
         Board {
             cells,
             parent: None,
@@ -61,8 +62,8 @@ impl Board {
         }
     }
 
-    fn with_parent(cells: Vec<Vec<i32>>, parent: &Board) -> Board {
-        let zero = find_zero(&cells);
+    fn with_parent(cells: Vec<i32>, parent: &Board) -> Board {
+        let zero = Self::find_zero(&cells);
         // let h_cost = calculate_h_cost(&cells, goal);
         let h_cost = 0;
         Board {
@@ -73,303 +74,265 @@ impl Board {
             h_cost,
         }
     }
-}
 
-fn main() {
-    // let board = Board::new(vec![vec![1, 2, 3], vec![4, 5, 0]]);
-    // println!("no.1: {}", sliding_puzzle(board));
-    //
-    // let board = Board::new(vec![vec![1, 2, 3], vec![4, 0, 5]]);
-    // println!("no.2: {}", sliding_puzzle(board));
-    //
-    // // not solvable
-    // let board = Board::new(vec![vec![1, 2, 3], vec![5, 4, 0]]);
-    // println!("no.3: {}", sliding_puzzle(board));
-    //
-    // let board = Board::new(vec![vec![4, 1, 2], vec![5, 0, 3]]);
-    // println!("no.4: {}", sliding_puzzle(board));
+    // two fns to calculate_h_cost
+    fn manhatan_dist(&self, goal: &Vec<i32>) -> i32 {
+        let mut h_cost = 0;
+        for i in 0..self.cells.len() {
+            if self.cells[i] != goal[i] && self.cells[i] != 0 {
+                let ni = i as i32 / 3;
+                let nj = i as i32 % 3;
+                let goal_i = (self.cells[i] - 1) / 3;
+                let goal_j = (self.cells[i] - 1) % 3;
 
-    // 22 moves like the online solver too
-    let custom_board = Board::new(vec![vec![1, 8, 3], vec![6, 4, 7], vec![5, 2, 0]]);
-    let bfs_start_time = Instant::now();
-    println!("BFS Result: {:?}", sliding_puzzle_bfs(custom_board));
-    let bfs_duration = bfs_start_time.elapsed();
-    println!("BFS Duration: {:?}", bfs_duration);
+                h_cost += (nj - goal_j).abs() + (ni - goal_i).abs();
+            }
+        }
+        h_cost
+    }
+    // doesn't work for now as it accumilates the h_cost
+    fn _manhatan_dist_not_first_time(&self, ay_ya_eedy: usize) -> i32 {
+        let mut h_cost = self.parent.as_ref().unwrap().h_cost;
+        // we use the i no ni in fn get_neighbors
+        let ni = ay_ya_eedy as i32 / 3;
+        let nj = ay_ya_eedy as i32 % 3;
+        let goal_i = (self.cells[ay_ya_eedy] - 1) / 3;
+        let goal_j = (self.cells[ay_ya_eedy] - 1) % 3;
 
-    // let random_board = random_board(3, 3);
-    // println!("random_board={:?}", random_board);
-    // println!("{:?}", find_zero(&random_board.cells));
-}
-
-fn calculate_h_cost(cells: &Vec<Vec<i32>>, goal: &Vec<Vec<i32>>) -> i32 {
-    let (m, n) = (cells.len(), cells[0].len());
-    let mut h_cost = 0;
-    for i in 0..m {
-        for j in 0..n {
-            if cells[i][j] != goal[i][j] && cells[i][j] != 0 {
+        h_cost += (nj - goal_j).abs() + (ni - goal_i).abs();
+        h_cost
+    }
+    fn _hamming_dist(cells: &Vec<i32>, goal: &Vec<i32>) -> i32 {
+        let mut h_cost = 0;
+        for i in 0..cells.len() {
+            if cells[i] != goal[i] && cells[i] != 0 {
                 h_cost += 1;
             }
         }
+        h_cost
     }
-    h_cost
-}
 
-fn find_zero(cells: &Vec<Vec<i32>>) -> (usize, usize) {
-    let (m, n) = (cells.len(), cells[0].len());
+    // I think it works-ish, it gives you a solvable board but the inversion count is wrong
+    pub fn is_solvable(cells: &Vec<i32>) -> bool {
+        let new_vec = cells.iter().filter(|&x| *x != 0).map(|&x| x).collect();
+        println!("new_vec={:?}", new_vec);
+        let inversions_count = Self::merge_sort(&new_vec);
+        println!("inversions_count={:?}", inversions_count);
+        if inversions_count % 2 == 0 {
+            return true;
+        }
+        false
+    }
 
-    for i in 0..m {
-        for j in 0..n {
-            if cells[i][j] == 0 {
-                return (i, j);
+    fn merge_sort(vec: &Vec<i32>) -> i32 {
+        let mut tmp = vec![-1; 8];
+        let mut inversions_count = 0;
+        Self::_merge_sort(
+            &mut vec.clone(),
+            0,
+            tmp.len() - 1,
+            &mut tmp,
+            &mut inversions_count,
+        );
+        println!("tmp={:#?}", tmp);
+        inversions_count
+    }
+
+    fn _merge_sort(
+        vec: &mut Vec<i32>,
+        st: usize,
+        end: usize,
+        tmp: &mut Vec<i32>,
+        inversions_count: &mut i32,
+    ) {
+        if st == end {
+            return;
+        }
+
+        let mid = st + (end - st) / 2;
+
+        Self::_merge_sort(vec, st, mid, tmp, inversions_count);
+        Self::_merge_sort(vec, mid + 1, end, tmp, inversions_count);
+
+        Self::_join_sorted_arrays(vec, st, mid, end, tmp, inversions_count);
+    }
+
+    fn _join_sorted_arrays(
+        vec: &mut Vec<i32>,
+        st: usize,
+        mid: usize,
+        end: usize,
+        tmp: &mut Vec<i32>,
+        inversions_count: &mut i32,
+    ) {
+        let mut k = st;
+        let mut i = st;
+        let mut j = mid + 1;
+
+        while k <= end {
+            if i > mid {
+                tmp[k] = vec[j];
+                j += 1;
+            } else if j > end {
+                tmp[k] = vec[i];
+                i += 1;
+            } else if vec[j] > vec[i] {
+                tmp[k] = vec[i];
+                i += 1;
+            } else {
+                tmp[k] = vec[j];
+                j += 1;
+                *inversions_count += mid as i32 - i as i32 + 1;
             }
+            k += 1;
+        }
+
+        println!("{:?}", &tmp[st..=end]);
+        vec[st..=end].copy_from_slice(&tmp[st..=end]);
+    }
+
+    pub fn random_board() -> Board {
+        loop {
+            let mut rng = rand::thread_rng();
+            let mut random_board = (0..9).collect::<Vec<i32>>();
+            random_board.shuffle(&mut rng);
+            println!("random_board={:?}", random_board);
+
+            if !Self::is_solvable(&random_board) {
+                continue;
+            }
+            return Board::new(random_board);
         }
     }
 
-    unreachable!()
-}
+    pub fn sliding_puzzle_a_star(start: Board) -> Option<Vec<Vec<i32>>> {
+        let goal = vec![1, 2, 3, 4, 5, 6, 7, 8, 0];
+        // println!("goal={:?}", goal);
 
-// take m and n
-// make a random board
-// solve it and store the result in a vec,
-// that will be achieved by making a board struct that will have the parent board
-//
-// add arrows to display where the last state was, using wher was the the zero or the di, dj
-// impl display for board to pretty print
-// add g_score & h_score
-// add place of zero instead of searching for it every time
-
-fn random_board(m: usize, n: usize) -> Board {
-    loop {
-        let mut rng = rand::thread_rng();
-        let mut board = (1..(m as i32 * n as i32)).collect::<Vec<i32>>();
-        board.push(0);
-        board.shuffle(&mut rng);
-
-        let random_board = Board::new(board.chunks(n).map(|chunk| chunk.to_vec()).collect());
-        println!("random_board={:?}", random_board);
-        if sliding_puzzle_bfs(random_board).is_some() {
-            return Board::new(board.chunks(n).map(|chunk| chunk.to_vec()).collect());
+        if start.cells == goal {
+            return Some(Vec::new());
         }
-    }
-}
 
-pub fn return_random_board(m: usize, n: usize) -> Vec<Vec<i32>> {
-    loop {
-        let mut rng = rand::thread_rng();
-        let mut board = (1..(m as i32 * n as i32)).collect::<Vec<i32>>();
-        board.push(0);
-        board.shuffle(&mut rng);
+        // start.h_cost = start.manhatan_dist(&goal);
 
-        let random_board = Board::new(board.chunks(n).map(|chunk| chunk.to_vec()).collect());
-        println!("random_board={:?}", random_board);
-        // check random generated board if it is solvable
-        // if sliding_puzzle_bfs(random_board).is_some() {
-        //     return board.chunks(n).map(|chunk| chunk.to_vec()).collect();
-        // }
-        // better way to chech if it can be solved
-        if is_solvable(&random_board, m, n) {
-            return board.chunks(n).map(|chunk| chunk.to_vec()).collect();
-        }
-    }
-}
+        let mut pq = BinaryHeap::new();
+        pq.push(start.clone());
 
-fn is_solvable(board: &Board, m: usize, n: usize) -> bool {
-    let flattened_board: Vec<i32> = board
-        .cells
-        .iter()
-        .flat_map(|row| row.iter())
-        .cloned()
-        .collect();
-    let mut inversion_count = 0;
-    println!("flattened_board={:?}", flattened_board);
+        let mut visited = HashSet::new();
+        visited.insert(start.cells);
 
-    for i in 0..(m * n) {
-        for j in i + 1..(m * n) {
-            if flattened_board[i] != 0
-                && flattened_board[j] != 0
-                && flattened_board[i] > flattened_board[j]
-            {
-                inversion_count += 1;
+        let mut count = 0;
+        while let Some(cur) = pq.pop() {
+            // println!("cur={:?}", cur);
+            // println!("pq={:?}", pq);
+            for neighbor in cur.get_neighbors(&goal) {
+                // println!("{count}");
+                // println!("neighbor={:?}", neighbor);
+                count += 1;
+                // if count >= 5 {
+                //     break;
+                // }
+                if neighbor.cells == goal {
+                    println!("neighbor={:?}", neighbor);
+                    Self::print_path(&neighbor);
+                    // println!("g_cost == lvl? {}", neighbor.g_cost);
+                    // return Some(neighbor.g_cost);
+                    return Some(Self::return_path(&neighbor));
+                }
+
+                if visited.insert(neighbor.cells.clone()) {
+                    pq.push(neighbor);
+                }
             }
         }
+
+        println!("hello");
+        None
     }
 
-    println!("inversion_count={:?}", inversion_count);
+    fn get_neighbors(&self, goal: &Vec<i32>) -> Vec<Board> {
+        let og_i = self.zero;
+        let mut v = Vec::new();
+        // println!("og_i={:#?}", og_i);
 
-    // For an odd-sized puzzle, the number of inversions must be even for solvability
-    if m * n % 2 == 1 {
-        return inversion_count % 2 == 0;
-    }
+        let i = og_i / 3;
+        // println!("i={:#?}", i);
+        let j = og_i % 3;
+        // println!("j={:#?}", j);
 
-    // For an even-sized puzzle, check the parity of the blank tile row from the bottom
-    let blank_row = board.cells.iter().position(|row| row.contains(&0)).unwrap();
-    inversion_count % 2 == (m - blank_row) % 2
-}
+        for &(di, dj) in &[(1, 0), (0, 1), (-1, 0), (0, -1)] {
+            let ni = i as i32 + di;
+            // println!("ni dir={:#?}", ni);
+            let nj = j as i32 + dj;
+            // println!("nj dir={:#?}", nj);
 
-pub fn return_sliding_puzzle_bfs(start: Board) -> Vec<Vec<Vec<i32>>> {
-    let (m, n) = (start.cells.len(), start.cells[0].len());
-    let goal = (1..(m as i32 * n as i32))
-        .chain(std::iter::once(0))
-        .collect::<Vec<_>>()
-        .chunks(n)
-        .map(|chunk| chunk.to_vec())
-        .collect::<Vec<_>>();
+            if ni < 3 && ni >= 0 && nj < 3 && nj >= 0 {
+                let mut new_board = Board::with_parent(self.cells.clone(), self);
+                let ni_new = ni * 3 + nj;
+                // println!("ni new={:#?}", ni_new);
+                // let f = new_board.manhatan_dist_not_first_time(&goal, i);
+                let f = new_board.manhatan_dist(&goal);
+                // println!("f={:#?}", f);
+                new_board.cells[og_i] = new_board.cells[ni_new as usize];
+                // println!("new_board={:?}", new_board);
+                new_board.cells[ni_new as usize] = 0;
+                // println!("new_board={:?}", new_board.cells);
+                // println!("new_board={:?}", new_board);
+                new_board.zero = ni_new as usize;
+                new_board.h_cost = f;
+                new_board.g_cost = self.g_cost + 1;
 
-    if start.cells == goal {
-        return vec![start.cells];
-    }
-
-    let mut q = VecDeque::new();
-    q.push_back(start.clone());
-
-    let mut visited = HashSet::new();
-    visited.insert(start.cells.clone());
-
-    while let Some(cur) = q.pop_front() {
-        for neighbor in get_neighbors(&cur, &goal) {
-            if neighbor.cells == goal {
-                let returned_path = return_path(&neighbor);
-                // println!("g_cost == lvl? {}", neighbor.g_cost);
-                return returned_path;
-                // return Some(neighbor.g_cost);
-            }
-
-            if visited.insert(neighbor.cells.clone()) {
-                q.push_back(neighbor);
+                v.push(new_board);
             }
         }
+
+        // println!("v={:?}", v);
+        v
     }
+    // return path as a vec for each step
+    pub fn return_path(mut board: &Board) -> Vec<Vec<i32>> {
+        let mut path = Vec::new();
 
-    unreachable!()
-}
-
-pub fn sliding_puzzle_bfs(start: Board) -> Option<i32> {
-    let (m, n) = (start.cells.len(), start.cells[0].len());
-    let goal = (1..(m as i32 * n as i32))
-        .chain(std::iter::once(0))
-        .collect::<Vec<_>>()
-        .chunks(n)
-        .map(|chunk| chunk.to_vec())
-        .collect::<Vec<_>>();
-
-    if start.cells == goal {
-        return Some(0);
-    }
-
-    let mut q = VecDeque::new();
-    q.push_back(start.clone());
-
-    let mut visited = HashSet::new();
-    visited.insert(start.cells.clone());
-
-    while let Some(cur) = q.pop_front() {
-        for neighbor in get_neighbors(&cur, &goal) {
-            if neighbor.cells == goal {
-                // print_path(&neighbor);
-                // println!("g_cost == lvl? {}", neighbor.g_cost);
-                return Some(neighbor.g_cost);
-            }
-
-            if visited.insert(neighbor.cells.clone()) {
-                q.push_back(neighbor);
-            }
+        while let Some(parent) = &board.parent {
+            path.push(board.cells.clone());
+            board = parent;
         }
-    }
 
-    None
-}
-
-pub fn sliding_puzzle_a_star(start: Board) -> Option<i32> {
-    let (m, n) = (start.cells.len(), start.cells[0].len());
-    let goal = (1..(m as i32 * n as i32))
-        .chain(std::iter::once(0))
-        .collect::<Vec<_>>()
-        .chunks(n)
-        .map(|chunk| chunk.to_vec())
-        .collect::<Vec<_>>();
-
-    if start.cells == goal {
-        return Some(0);
-    }
-
-    let mut pq = BinaryHeap::new();
-    pq.push(start.clone());
-
-    let mut visited = HashSet::new();
-    visited.insert(start.cells.clone());
-
-    while let Some(cur) = pq.pop() {
-        for neighbor in get_neighbors(&cur, &goal) {
-            if neighbor.cells == goal {
-                print_path(&neighbor);
-                println!("g_cost == lvl? {}", neighbor.g_cost);
-                return Some(neighbor.g_cost);
-            }
-
-            if visited.insert(neighbor.cells.clone()) {
-                pq.push(neighbor);
-            }
-        }
-    }
-
-    None
-}
-
-fn get_neighbors(board: &Board, goal: &Vec<Vec<i32>>) -> Vec<Board> {
-    let (m, n) = (board.cells.len(), board.cells[0].len());
-    let (i, j) = board.zero;
-    let mut v = Vec::new();
-
-    for &(di, dj) in &[(1, 0), (0, 1), (-1, 0), (0, -1)] {
-        let ni = (i as i32 + di) as usize;
-        let nj = (j as i32 + dj) as usize;
-
-        if ni < m && nj < n {
-            let mut new_board = Board::with_parent(board.cells.clone(), board);
-            new_board.cells[i][j] = new_board.cells[ni][nj];
-            new_board.cells[ni][nj] = 0;
-            new_board.zero = (ni, nj);
-
-            v.push(new_board);
-        }
-    }
-
-    v
-}
-
-// return path as a vec for each step
-pub fn return_path(mut board: &Board) -> Vec<Vec<Vec<i32>>> {
-    let mut path = Vec::new();
-
-    while let Some(parent) = &board.parent {
         path.push(board.cells.clone());
-        board = parent;
+
+        // for (index, step) in path.iter().rev().enumerate() {
+        //     println!("h_cost {}", step.h_cost);
+        //     println!("g_cost {}", step.g_cost);
+        //     println!("Step {}:\n{}", index, step);
+        // }
+        println!("path from fn={:?}", path);
+        path
     }
 
-    path.push(board.cells.clone());
+    fn print_path(mut board: &Board) {
+        let mut path = Vec::new();
 
-    // for (index, step) in path.iter().rev().enumerate() {
-    //     println!("h_cost {}", step.h_cost);
-    //     println!("g_cost {}", step.g_cost);
-    //     println!("Step {}:\n{}", index, step);
-    // }
-    println!("path from fn={:?}", path);
-    path
-}
+        while let Some(parent) = &board.parent {
+            path.push(board);
+            board = parent;
+        }
 
-fn print_path(mut board: &Board) {
-    let mut path = Vec::new();
-
-    while let Some(parent) = &board.parent {
         path.push(board);
-        board = parent;
-    }
 
-    path.push(board);
-
-    for (index, step) in path.iter().rev().enumerate() {
-        println!("h_cost {}", step.h_cost);
-        println!("g_cost {}", step.g_cost);
-        println!("Step {}:\n{}", index, step);
+        for (index, step) in path.iter().rev().enumerate() {
+            println!("h_cost {}", step.h_cost);
+            println!("g_cost {}", step.g_cost);
+            println!("Step {}:\n{}", index, step);
+        }
     }
 }
+
+// fn main() {
+//     let start_cells = vec![1, 8, 3, 6, 4, 7, 5, 2, 0];
+//     let start_board = Board::new(start_cells.clone());
+//     let goal = vec![1, 2, 3, 4, 5, 6, 7, 8, 0];
+//     // println!("{:?}", Board::get_neighbors(&start_board, &goal));
+//     println!("{:?}", Board::sliding_puzzle_a_star(start_board));
+//     // let random_board = Board::random_board();
+//     // println!("{:?}", Board::sliding_puzzle_a_star(random_board));
+// }

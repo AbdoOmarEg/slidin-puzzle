@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <div id="remaining_iterations">
-  <!-- <tbody id="todos-content"> -->
-  <!-- Askama allows for rendering an array of things -->
   <table>
     {% for board in path %}
     <tr>
@@ -11,10 +9,10 @@
     {% endfor %}
   </table>
   <br>
-
-  <!-- </tbody> -->
-  <button type="button" hx-target="#remaining_iterations"  hx-get="/badz?index={{step}}" hx-swap="innerhtml"> next iteration </button>
+  {% if is_last_step %}
+  <h1> nope </h1>
+  {% else %}
+  <button type="button" hx-target="#remaining_iterations"  hx-get="/rest_iterations?index={{step}}" hx-swap="innerhtml"> next iteration </button>
+  {% endif %}
 </div>
 {% endblock %}
-
-<!-- templates/todos.html -->

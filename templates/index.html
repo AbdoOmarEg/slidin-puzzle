@@ -5,7 +5,7 @@
 <h1>Sliding puzzle</h1>
 <!-- first_iteration -->
 <div id="btn"> <button id="btn" type="button" hx-target="#first_iteration" hx-get="/loading" hx-swap="innerHtml" > Generate Random 3x3 </button> </div>
-<div id="list" hx-get="/bad" hx-target="this" hx-trigger="load" hx-swap="innerHTML">
+<div id="list" hx-get="/first_iteration" hx-target="this" hx-trigger="load" hx-swap="innerHTML">
     Generating a random 3x3...
 </div>
 {% endblock %}
