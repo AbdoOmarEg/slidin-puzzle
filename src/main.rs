@@ -80,25 +80,25 @@ async fn path_index_iterations(
     Query(query): Query<Input>,
 ) -> impl IntoResponse {
     let index = query.index;
-    println!("rest_iterations initiating with index={}", index);
+    // println!("rest_iterations initiating with index={}", index);
 
     let iterations =
         sqlx::query_as::<_, PuzzleIteration>("SELECT * FROM full_path WHERE iteration_index = ?")
             .bind(index)
             .fetch_one(&pool)
             .await;
-    println!("line 84 Query result: {:?}", iterations);
+    // println!("line 84 Query result: {:?}", iterations);
 
     if let Ok(iteration) = iterations {
         // let path: String = serde_json::from_str(&iteration.path_json).unwrap();
         let path: String = iteration.path_json;
 
-        println!("path from json ={:?} and needed to be changed to 2x2", path);
+        // println!("path from json ={:?} and needed to be changed to 2x2", path);
         let path: Vec<String> = path
             .split(",")
             .map(|s| s.to_string())
             .collect::<Vec<String>>();
-        println!("path path_index_z={:?}", path);
+        // println!("path path_index_z={:?}", path);
         if path.len() == 4 {
             let template = StepTemplate {
                 title: String::from("path page"),
@@ -126,16 +126,16 @@ async fn path_index_iterations(
         .fetch_one(&pool)
         .await
         .unwrap();
-        println!("last board, {:?}", iterations);
+        // println!("last board, {:?}", iterations);
 
         let path: String = iterations.path_json;
 
-        println!("path from json ={:?} and needed to be changed to 2x2", path);
+        // println!("path from json ={:?} and needed to be changed to 2x2", path);
         let path: Vec<String> = path
             .split(",")
             .map(|s| s.to_string())
             .collect::<Vec<String>>();
-        println!("path path_index_z={:?}", path);
+        // println!("path path_index_z={:?}", path);
 
         let template = StepTemplate {
             title: String::from("path page"),
@@ -163,7 +163,7 @@ pub async fn initialize_database() -> SqlitePool {
 
     // db start
     if !Sqlite::database_exists(DB_URL).await.unwrap_or(false) {
-        println!("Creating database {}", DB_URL);
+        // println!("Creating database {}", DB_URL);
         match Sqlite::create_database(DB_URL).await {
             Ok(_) => println!("Create db success"),
             Err(error) => panic!("error: {}", error),
@@ -190,7 +190,7 @@ pub async fn initialize_database() -> SqlitePool {
             panic!("error: {}", error);
         }
     }
-    println!("migration: {:?}", migration_results);
+    // println!("migration: {:?}", migration_results);
 
     //start
     let result = sqlx::query(
@@ -203,7 +203,7 @@ pub async fn initialize_database() -> SqlitePool {
     .await
     .unwrap();
     for (idx, row) in result.iter().enumerate() {
-        println!("[{}]: {:?}", idx, row.get::<String, &str>("name"));
+        // println!("[{}]: {:?}", idx, row.get::<String, &str>("name"));
     }
 
     // // args inserting
@@ -292,25 +292,25 @@ async fn path_index_whole_board(State(pool): State<SqlitePool>) -> impl IntoResp
             .map(|row| row.chunks(3).map(|chunk| chunk.to_vec()).collect())
             .collect(),
     };
-    println!("path_index={:?}", template.path);
-    println!("len={:?}", template.path.len());
+    // println!("path_index={:?}", template.path);
+    // println!("len={:?}", template.path.len());
 
     // Delete existing data from the database
     let delete_result = sqlx::query("DELETE FROM full_path")
         .execute(&pool)
         .await
         .unwrap();
-    println!("Delete result: {:?}", delete_result);
+    // println!("Delete result: {:?}", delete_result);
 
     let iteration =
         sqlx::query_as::<_, PuzzleIteration>("SELECT * FROM full_path WHERE iteration_index = ?")
             .fetch_optional(&pool)
             .await;
-    println!("Query result: {:?}", iteration);
+    // println!("Query result: {:?}", iteration);
 
     for (index, board) in returned_board.iter().enumerate() {
-        println!("returned_board={:?}", returned_board.len());
-        println!("board={:?}", board);
+        // println!("returned_board={:?}", returned_board.len());
+        // println!("board={:?}", board);
         let mut board_string = String::new();
 
         for (i, &num) in board.iter().enumerate() {
@@ -320,11 +320,11 @@ async fn path_index_whole_board(State(pool): State<SqlitePool>) -> impl IntoResp
 
         let mut board = board_string.trim_end().to_string();
         if index == returned_board.len() - 1 {
-            println!("a7eeh");
+            // println!("a7eeh");
             board.push_str(",atoobees compelete");
         };
 
-        println!("{}", board);
+        // println!("{}", board);
         let result =
             sqlx::query("INSERT INTO full_path (path_json, iteration_index) VALUES (?, ?)")
                 .bind(board) // Serialize board to JSON string
@@ -332,7 +332,7 @@ async fn path_index_whole_board(State(pool): State<SqlitePool>) -> impl IntoResp
                 .execute(&pool)
                 .await
                 .unwrap();
-        println!("Query result: {:?}", result);
+        // println!("Query result: {:?}", result);
     }
 
     template

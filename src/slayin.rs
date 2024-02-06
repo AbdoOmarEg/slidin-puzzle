@@ -115,9 +115,9 @@ impl Board {
     // I think it works-ish, it gives you a solvable board but the inversion count is wrong
     pub fn is_solvable(cells: &Vec<i32>) -> bool {
         let new_vec = cells.iter().filter(|&x| *x != 0).map(|&x| x).collect();
-        println!("new_vec={:?}", new_vec);
+        // println!("new_vec={:?}", new_vec);
         let inversions_count = Self::merge_sort(&new_vec);
-        println!("inversions_count={:?}", inversions_count);
+        // println!("inversions_count={:?}", inversions_count);
         if inversions_count % 2 == 0 {
             return true;
         }
@@ -134,7 +134,7 @@ impl Board {
             &mut tmp,
             &mut inversions_count,
         );
-        println!("tmp={:#?}", tmp);
+        // println!("tmp={:#?}", tmp);
         inversions_count
     }
 
@@ -187,7 +187,7 @@ impl Board {
             k += 1;
         }
 
-        println!("{:?}", &tmp[st..=end]);
+        // println!("{:?}", &tmp[st..=end]);
         vec[st..=end].copy_from_slice(&tmp[st..=end]);
     }
 
@@ -196,7 +196,7 @@ impl Board {
             let mut rng = rand::thread_rng();
             let mut random_board = (0..9).collect::<Vec<i32>>();
             random_board.shuffle(&mut rng);
-            println!("random_board={:?}", random_board);
+            // println!("random_board={:?}", random_board);
 
             if !Self::is_solvable(&random_board) {
                 continue;
@@ -233,7 +233,7 @@ impl Board {
                 //     break;
                 // }
                 if neighbor.cells == goal {
-                    println!("neighbor={:?}", neighbor);
+                    // println!("neighbor={:?}", neighbor);
                     Self::print_path(&neighbor);
                     // println!("g_cost == lvl? {}", neighbor.g_cost);
                     // return Some(neighbor.g_cost);
@@ -246,7 +246,7 @@ impl Board {
             }
         }
 
-        println!("hello");
+        // println!("hello");
         None
     }
 
@@ -305,7 +305,7 @@ impl Board {
         //     println!("g_cost {}", step.g_cost);
         //     println!("Step {}:\n{}", index, step);
         // }
-        println!("path from fn={:?}", path);
+        // println!("path from fn={:?}", path);
         path
     }
 
@@ -320,9 +320,9 @@ impl Board {
         path.push(board);
 
         for (index, step) in path.iter().rev().enumerate() {
-            println!("h_cost {}", step.h_cost);
-            println!("g_cost {}", step.g_cost);
-            println!("Step {}:\n{}", index, step);
+            // println!("h_cost {}", step.h_cost);
+            // println!("g_cost {}", step.g_cost);
+            // println!("Step {}:\n{}", index, step);
         }
     }
 }

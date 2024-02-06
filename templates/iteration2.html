@@ -9,10 +9,8 @@
     {% endfor %}
   </table>
   <br>
-  {% if is_last_step %}
-  <h1> nope </h1>
-  {% else %}
-  <button type="button" hx-target="#remaining_iterations"  hx-get="/rest_iterations?index={{step}}" hx-swap="innerhtml"> next iteration </button>
+  {% if !is_last_step %}
+  <button type="button" hx-trigger="every 0.1s" hx-target="#remaining_iterations" hx-get="/rest_iterations?index={{step}}" hx-swap="innerhtml"> next iteration </button>
   {% endif %}
 </div>
 {% endblock %}
