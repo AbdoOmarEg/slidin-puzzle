@@ -4,20 +4,15 @@
 <div id="first_iteration">
   <table>
     {% for board in path %}
-    {% for cells in board %}
     <tr>
-      {% for cell in cells %}
-      <td> {{cell}} </td>
+      {% for (idx, cells) in board %}
+      <td> <button type="button" hx-get="/slide?idx={{idx}}" > {{cells}} </button> </td>
       {% endfor %}
     </tr>
-    {% endfor %}
-    {% if loop.first %}
-    {% break %}
-    {% endif %}
     {% endfor %}
   </table>
   <br>
 
-  <button type="button" hx-target ="#first_iteration" hx-get="/rest_iterations?index=1" hx-swap="innerhtml"> START </button>
+  <button type="button" hx-target ="#first_iteration" hx-get="/rest_iterations?index=0" hx-swap="innerhtml"> START </button>
 </div>
 {% endblock %}

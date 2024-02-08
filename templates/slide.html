@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="first_iteration">
+  <table>
+    {% for board in path %}
+    <tr>
+      {% for (idx, cells) in board %}
+      <td> <button type="button" hx-get="/slide?idx={{idx}}"> {{cells}} </button> </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  <br>
+
+  <!-- <button type="button" hx-target="#first_iteration" hx-get="/rest_iterations?index=0" hx-swap="innerhtml"> START -->
+  <div id="eladya_momken">
+    <button type="button" hx-target="#eladya_momken" hx-get="/loadz" hx-swap="outerhtml"> START
+    </button>
+  </div>
+
+  </button>
+</div>
+{% endblock %}

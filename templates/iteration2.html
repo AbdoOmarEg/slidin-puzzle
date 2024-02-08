@@ -4,13 +4,18 @@
   <table>
     {% for board in path %}
     <tr>
-      <td> {{board}} </td>
+      {% for cells in board %}
+      <td> <button type="button"> {{cells}} </button> </td>
+      {% endfor %}
     </tr>
     {% endfor %}
+
   </table>
-  <br>
-  {% if !is_last_step %}
-  <button type="button" hx-trigger="every 0.1s" hx-target="#remaining_iterations" hx-get="/rest_iterations?index={{step}}" hx-swap="innerhtml"> next iteration </button>
+  {% if is_last_step %}
+  <span>atoobees compelete</span>
+  {% else %}
+  <!-- <button type="button" hx-trigger="every 0.1s" hx-target="#remaining_iterations" hx-get="/solve?index={{step}}" hx-swap="innerhtml"> next iteration </button> -->
+  <div hx-trigger="every 0.1s" hx-target="#remaining_iterations" hx-get="/solve?index={{step}}" hx-swap="innerhtml"> <!-- wla wla wla --> </div>
   {% endif %}
 </div>
 {% endblock %}

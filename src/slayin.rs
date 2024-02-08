@@ -6,7 +6,7 @@ use rand::seq::SliceRandom;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 pub struct Board {
-    cells: Vec<i32>,
+    pub cells: Vec<i32>,
     parent: Option<Box<Board>>,
     zero: usize,
     g_cost: i32,
