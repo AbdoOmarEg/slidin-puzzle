@@ -5,7 +5,7 @@
     {% for board in path %}
     <tr>
       {% for (idx, cells) in board %}
-      <td> <button type="button" hx-get="/slide?idx={{idx}}"> {{cells}} </button> </td>
+      <td> <button type="button" class="btn btn-primary" hx-get="/slide?idx={{idx}}"> {{cells}} </button> </td>
       {% endfor %}
     </tr>
     {% endfor %}

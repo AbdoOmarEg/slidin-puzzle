@@ -28,6 +28,13 @@ async fn main() {
         .route("/slide", get(slide))
         .route("/solve", get(solve))
         .route("/loadz", get(loadz))
+        .nest_service(
+            "/templates",
+            tower_http::services::ServeFile::new(format!(
+                "{}/templates/output.css",
+                std::env::current_dir().unwrap().to_str().unwrap()
+            )),
+        )
         .with_state(pool);
     let listener = TcpListener::bind("127.0.0.1:8000").await.unwrap();
     println!("listening on {}", listener.local_addr().unwrap());
