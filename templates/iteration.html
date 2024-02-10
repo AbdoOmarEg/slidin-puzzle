@@ -1,18 +1,25 @@
 <!-- templates/todos.html -->
 {% extends "base.html" %}
 {% block content %}
-<div id="first_iteration">
+
+<div id="first_iteration" class="flex justify-center items-center h-screen">
   <table>
     {% for board in path %}
     <tr>
       {% for (idx, cells) in board %}
-      <td> <button class="btn btn-primary" type="button" hx-get="/slide?idx={{idx}}" > {{cells}} </button> </td>
+      <td> <button class="btn btn-lg btn-primary" type="button" hx-get="/slide?idx={{idx}}" > {{cells}} </button> </td>
       {% endfor %}
     </tr>
     {% endfor %}
   </table>
+</div>
+
   <br>
 
-  <button type="button" hx-target ="#first_iteration" hx-get="/rest_iterations?index=0" hx-swap="innerhtml"> START </button>
-</div>
+  <!-- <button type="button" hx-target ="#first_iteration" hx-get="/rest_iterations?index=0" hx-swap="innerhtml"> START </button> -->
+  <div id="eladya_momken" class="flex">
+    <button type="button" hx-target="#eladya_momken" hx-get="/loadz" hx-swap="outerhtml"> START
+    </button>
+  </div>
+
 {% endblock %}

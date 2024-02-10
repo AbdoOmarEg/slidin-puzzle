@@ -1,23 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-<div id="first_iteration">
+<div id="first_iteration" class="flex justify-center items-center h-screen">
   <table>
     {% for board in path %}
     <tr>
       {% for (idx, cells) in board %}
-      <td> <button type="button" class="btn btn-primary" hx-get="/slide?idx={{idx}}"> {{cells}} </button> </td>
+      <td> <button type="button" class="btn btn-lg btn-primary" hx-get="/slide?idx={{idx}}"> {{cells}} </button> </td>
       {% endfor %}
     </tr>
     {% endfor %}
   </table>
   <br>
 
-  <!-- <button type="button" hx-target="#first_iteration" hx-get="/rest_iterations?index=0" hx-swap="innerhtml"> START -->
-  <div id="eladya_momken">
+  <div id="eladya_momken" class="flex">
     <button type="button" hx-target="#eladya_momken" hx-get="/loadz" hx-swap="outerhtml"> START
     </button>
   </div>
 
-  </button>
+<!-- have a loading "hmm..." underneath the statrt button -->
+<!--   <div id="eladya_momken"> -->
+<!--     <button type="button" hx-target="#first_iteration" hx-get="/rest_iterations?index=0" hx-swap="outerhtml" hx-indicator="#woah"> START -->
+<!--     </button> -->
+<!--     <div id="woah" class="htmx-indicator"> -->
+<!--       hmm... -->
+<!--     </div> -->
+
 </div>
 {% endblock %}

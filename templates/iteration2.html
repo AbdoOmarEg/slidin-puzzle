@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<div id="remaining_iterations">
+
+<div id="remaining_iterations" class="flex justify-center items-center h-screen">
   <table>
     {% for board in path %}
     <tr>
       {% for cells in board %}
-      <td> <button type="button" class="btn btn-primary"> {{cells}} </button> </td>
+      <td> <button type="button" class="btn btn-lg btn-primary"> {{cells}} </button> </td>
       {% endfor %}
     </tr>
     {% endfor %}
