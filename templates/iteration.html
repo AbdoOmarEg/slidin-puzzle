@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div id="first_iteration" class="flex justify-center items-center h-screen">
+<div id="first_iteration" class="flex justify-center items-center">
   <table>
     {% for board in path %}
     <tr>
@@ -14,12 +14,14 @@
   </table>
 </div>
 
-  <br>
-
   <!-- <button type="button" hx-target ="#first_iteration" hx-get="/rest_iterations?index=0" hx-swap="innerhtml"> START </button> -->
-  <div id="eladya_momken" class="flex">
-    <button type="button" hx-target="#eladya_momken" hx-get="/loadz" hx-swap="outerhtml"> START
+  <div id="eladya_momken" class="flex justify-center">
+    <button type="button" class="btn btn-secondary btn-lg" hx-target="#eladya_momken" hx-get="/loadz" hx-swap="outerhtml"> START
     </button>
   </div>
+
+    <button hx-put="/edit" class="btn btn-accent">
+    Click To Edit
+    </button>
 
 {% endblock %}

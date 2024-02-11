@@ -1,6 +1,6 @@
 use askama::Template;
 use axum::extract::Query;
-use axum::routing::get;
+use axum::routing::{get, put};
 use axum::Router;
 use axum::{extract::State, response::IntoResponse};
 use serde::{Deserialize, Serialize};
@@ -28,6 +28,7 @@ async fn main() {
         .route("/slide", get(slide))
         .route("/solve", get(solve))
         .route("/loadz", get(loadz))
+        .route("/edit", put(edit))
         .nest_service(
             "/templates",
             tower_http::services::ServeFile::new(format!(
@@ -50,6 +51,19 @@ struct LoadzTemplate {
 async fn loadz() -> impl IntoResponse {
     LoadzTemplate {
         title: String::from("loadzzzing..."),
+    }
+}
+
+#[derive(Template)]
+#[template(path = "edit.html")]
+struct Edit {
+    title: String,
+}
+
+async fn edit() -> impl IntoResponse {
+    println!("hello");
+    Edit {
+        title: String::from("editing"),
     }
 }
 

@@ -1,0 +1,96 @@
+<!-- templates/todos.html -->
+{% extends "base.html" %}
+{% block content %}
+
+<div>
+  <p>{{title}}</p>
+</div>
+
+<div id="first_iteration" class="flex justify-center items-center">
+  <table>
+    {# {% for board in path %} #}
+    <tr>
+      {# {% for (idx, cells) in board %} #}
+      <td> <button hx-put="/first_iteration" hx-target="body" class="btn btn-lg btn-primary"> </button> </td>
+      <td> <button hx-put="/first_iteration" hx-target="body" class="btn btn-lg btn-primary"> </button> </td>
+      <td> <button hx-put="/first_iteration" hx-target="body" class="btn btn-lg btn-primary"> </button> </td>
+      {# {% endfor %} #}
+    </tr>
+    <tr>
+      {# {% for (idx, cells) in board %} #}
+      <td> <button hx-put="/first_iteration" hx-target="body" class="btn btn-lg btn-primary"> </button> </td>
+      <td> <button hx-put="/first_iteration" hx-target="body" class="btn btn-lg btn-primary"> </button> </td>
+      <td> <button hx-put="/first_iteration" hx-target="body" class="btn btn-lg btn-primary"> </button> </td>
+      {# {% endfor %} #}
+    </tr>
+    <tr>
+      {# {% for (idx, cells) in board %} #}
+      <td> <button hx-put="/first_iteration" hx-target="body" class="btn btn-lg btn-primary"> </button> </td>
+      <td> <button hx-put="/first_iteration" hx-target="body" class="btn btn-lg btn-primary"> </button> </td>
+      <td> <button hx-put="/first_iteration" hx-target="body" class="btn btn-lg btn-primary"> </button> </td>
+      {# {% endfor %} #}
+    </tr>
+    {# {% endfor %} #}
+  </table>
+  <!-- <button hx-put="/account" hx-target="body"> -->
+  <!--   Put Money In Your Account -->
+  <!-- </button> -->
+  <!--   <form hx-put="/first_iteration" hx-target="this" hx-swap="outerHTML"> -->
+  <!--     <div> -->
+  <!--       <label>First Name</label> -->
+  <!--       <input type="text" name="firstName" value="Joe"> -->
+  <!--     </div> -->
+  <!--     <button class="btn">Submit</button> -->
+  <!--     <button class="btn" hx-get="/first_iteration">Cancel</button> -->
+  <!--   </form> -->
+  <!-- </div> -->
+
+  {#
+  <div id="first_iteration" class="flex justify-center items-center">
+    <table>
+      {% for board in path %}
+      <tr>
+        {% for (idx, cells) in board %}
+        <td> <button class="btn btn-lg btn-primary" type="button" hx-get="/slide?idx={{idx}}"> {{cells}} </button> </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  #}
+
+  <!-- <form hx-put="/contact/1" hx-target="this" hx-swap="outerHTML"> -->
+  <!--   <div> -->
+  <!--     <label>First Name</label> -->
+  <!--     <input type="text" name="firstName" value="Joe"> -->
+  <!--   </div> -->
+  <!--   <div class="form-group"> -->
+  <!--     <label>Last Name</label> -->
+  <!--     <input type="text" name="lastName" value="Blow"> -->
+  <!--   </div> -->
+  <!--   <div class="form-group"> -->
+  <!--     <label>Email Address</label> -->
+  <!--     <input type="email" name="email" value="joe@blow.com"> -->
+  <!--   </div> -->
+  <!--   <button class="btn">Submit</button> -->
+  <!--   <button class="btn" hx-get="/contact/1">Cancel</button> -->
+  <!-- </form> -->
+  <!---->
+  <!-- <button hx-put="/account" hx-target="body"> -->
+  <!--   Put Money In Your Account -->
+  <!-- </button> -->
+
+  <!-- <button type="button" hx-target ="#first_iteration" hx-get="/rest_iterations?index=0" hx-swap="innerhtml"> START </button> -->
+  <div id="eladya_momken" class="flex justify-center">
+    <button type="button" class="btn btn-secondary btn-lg" hx-target="#eladya_momken" hx-get="/loadz"
+      hx-swap="outerhtml">
+      START
+    </button>
+  </div>
+
+  <button hx-get="/edit" class="btn btn-accent">
+    Click To Edit
+    Nigga
+  </button>
+
+  {% endblock %}

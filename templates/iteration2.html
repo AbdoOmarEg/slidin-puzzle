@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div id="remaining_iterations" class="flex justify-center items-center h-screen">
+<div id="remaining_iterations" >
+  <div id="place_holder_to_make_flex_work" class="flex justify-center items-center">
   <table>
     {% for board in path %}
     <tr>
@@ -10,12 +11,13 @@
       {% endfor %}
     </tr>
     {% endfor %}
-
   </table>
+  </div>
   {% if is_last_step %}
-  <span>atoobees compelete</span>
+  <div id="eladya_momken" class="flex justify-center">
+    <button type="button" class="btn btn-accent btn-lg btn-disable no-animation"> atoobees compelete </button>
+  </div>
   {% else %}
-  <!-- <button type="button" hx-trigger="every 0.1s" hx-target="#remaining_iterations" hx-get="/solve?index={{step}}" hx-swap="innerhtml"> next iteration </button> -->
   <div hx-trigger="every 0.1s" hx-target="#remaining_iterations" hx-get="/solve?index={{step}}" hx-swap="innerhtml"> <!-- wla wla wla --> </div>
   {% endif %}
 </div>

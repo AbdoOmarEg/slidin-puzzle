@@ -1,19 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-<div id="first_iteration" class="flex justify-center items-center h-screen">
+<div id="first_iteration" class="flex justify-center items-center">
   <table>
     {% for board in path %}
     <tr>
       {% for (idx, cells) in board %}
-      <td> <button type="button" class="btn btn-lg btn-primary" hx-get="/slide?idx={{idx}}"> {{cells}} </button> </td>
+      <td> <button type="button" class="btn btn-lg btn-primary no-animation" hx-get="/slide?idx={{idx}}"> {{cells}} </button> </td>
       {% endfor %}
     </tr>
     {% endfor %}
   </table>
   <br>
+</div>
 
-  <div id="eladya_momken" class="flex">
-    <button type="button" hx-target="#eladya_momken" hx-get="/loadz" hx-swap="outerhtml"> START
+  <div id="eladya_momken" class="flex justify-center">
+    <button type="button" class="btn btn-secondary btn-lg" hx-target="#eladya_momken" hx-get="/loadz" hx-swap="outerhtml"> START
     </button>
   </div>
 
@@ -25,5 +26,4 @@
 <!--       hmm... -->
 <!--     </div> -->
 
-</div>
 {% endblock %}
